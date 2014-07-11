@@ -2,9 +2,8 @@
   "name": "box2djs_study",
   "version": "0.0.1",
   "dependencies": {
+    "jquery": "~2.1.1",
     "box2d.js": "~2.2.1"
   },
-  "devDependencies": {
-    "box2d.js": "~2.2.1"
-  }
+  "devDependencies": {}
 }
