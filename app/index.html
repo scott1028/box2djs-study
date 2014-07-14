@@ -100,7 +100,11 @@
             ,  10       //velocity iterations
             ,  10       //position iterations
          );
+
+         // 讓物理世界更新資料
          world.DrawDebugData();
+         
+         // 不確定功能(清除向量?)
          world.ClearForces();
       };
    
