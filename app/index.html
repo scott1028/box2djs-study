@@ -16,9 +16,9 @@
          	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
          	,	b2Body = Box2D.Dynamics.b2Body
          	,	b2FixtureDef = Box2D.Dynamics.b2FixtureDef
-         	,	b2Fixture = Box2D.Dynamics.b2Fixture
+         	// ,	b2Fixture = Box2D.Dynamics.b2Fixture
          	,	b2World = Box2D.Dynamics.b2World
-         	,	b2MassData = Box2D.Collision.Shapes.b2MassData
+         	// ,	b2MassData = Box2D.Collision.Shapes.b2MassData
          	,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
          	,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
          	,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw
@@ -63,7 +63,7 @@
          fixDef.shape.SetAsBox(0.5, 10);     // 寬高為 1 (中心點向上下左右各長 0.5 單位)
          world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
          
-         // 隨機產生一些剛體物件丟到世界
+         // 隨機產生一些 剛體碰撞器 + 材質 的物件丟到世界
          bodyDef.type = b2Body.b2_dynamicBody;
          for(var i = 0; i < 10; ++i) {
             if(Math.random() > 0.5) {
