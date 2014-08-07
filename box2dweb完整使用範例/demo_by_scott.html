@@ -3,29 +3,29 @@
       <title>Box2dWeb Demo</title>
    </head>
    <body onload="init();">
-   	  <!-- Box2D World -->
+      <!-- Box2D World -->
       <canvas id="canvas" width="600" height="400" style="background-color:#333333;" ></canvas>
 
-	  <!-- My Game World -->
+      <!-- My Game World -->
       <div style="background-color: silver;width: 600px;height: 400px; float: left; position: relative;">
-      	<button id="obj_body" style="position: absolute;">I am Benny!</button>
+        <button id="obj_body" style="position: absolute;">I am Benny!</button>
       </div>
    </body>
    <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
    <script type="text/javascript">
       
       function init() {
-         var   b2Vec2 = Box2D.Common.Math.b2Vec2
+         b2Vec2 = Box2D.Common.Math.b2Vec2
             ,  b2AABB = Box2D.Collision.b2AABB
-         	,	b2BodyDef = Box2D.Dynamics.b2BodyDef
-         	,	b2Body = Box2D.Dynamics.b2Body
-         	,	b2FixtureDef = Box2D.Dynamics.b2FixtureDef
-         	,	b2Fixture = Box2D.Dynamics.b2Fixture
-         	,	b2World = Box2D.Dynamics.b2World
-         	,	b2MassData = Box2D.Collision.Shapes.b2MassData
-         	,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
-         	,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
-         	,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+            ,   b2BodyDef = Box2D.Dynamics.b2BodyDef
+            ,   b2Body = Box2D.Dynamics.b2Body
+            ,   b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+            ,   b2Fixture = Box2D.Dynamics.b2Fixture
+            ,   b2World = Box2D.Dynamics.b2World
+            ,   b2MassData = Box2D.Collision.Shapes.b2MassData
+            ,   b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+            ,   b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+            ,   b2DebugDraw = Box2D.Dynamics.b2DebugDraw
             ,  b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef
             ;
          
@@ -37,7 +37,7 @@
          var fixDef = new b2FixtureDef;
          fixDef.density = 1.0;
          fixDef.friction = 0.5;
-         fixDef.restitution = 0.9;
+         fixDef.restitution = 0.5;
          
          var bodyDef = new b2BodyDef;
          
@@ -58,35 +58,42 @@
          //create some objects
          bodyDef.type = b2Body.b2_dynamicBody;
          for(var i = 0; i < 1; ++i) {
-            if(Math.random() > 0.5) {
-               fixDef.shape = new b2PolygonShape;
-               fixDef.shape.SetAsBox(
-                     Math.random() + 0.1 //half width
-                  ,  Math.random() + 0.1 //half height
-               );
-            } else {
-               fixDef.shape = new b2CircleShape(
-                  Math.random() + 0.1 //radius
-               );
-            }
+            // if(Math.random() > 0.5) {
+            //    fixDef.shape = new b2PolygonShape;
+            //    fixDef.shape.SetAsBox(
+            //          Math.random() + 0.1 //half width
+            //       ,  Math.random() + 0.1 //half height
+            //    );
+            // } else {
+            //    fixDef.shape = new b2CircleShape(
+            //       Math.random() + 0.1 //radius
+            //    );
+            // }
+            fixDef.shape = new b2PolygonShape;
+            fixDef.shape.SetAsBox(
+                 Math.random() + 0.5 //half width
+              ,  Math.random() + 0.5 //half height
+            );
+
             bodyDef.position.x = Math.random() * 10;
             bodyDef.position.y = Math.random() * 10;
             
-            var obj_fixutre = world.CreateBody(bodyDef).CreateFixture(fixDef);
-            var obj_body = obj_fixutre.GetBody().GetDefinition();
-
             // rigibody instance handle
-            window.obj_body = obj_body;
+            obj_fixture = world.CreateBody(bodyDef).CreateFixture(fixDef);   // can set physical property ...etc here
+            // obj_body_def = obj_fixture.GetBody();    // can get rotation ...etc info here
+            // obj_body = obj_body_def.GetDefinition();  // 
+
+            // window.obj_body = obj_body;
          }
          
          //setup debug draw
          var debugDraw = new b2DebugDraw();
-			debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
-			debugDraw.SetDrawScale(30.0);
-			debugDraw.SetFillAlpha(0.5);
-			debugDraw.SetLineThickness(1.0);
-			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-			world.SetDebugDraw(debugDraw);
+            debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
+            debugDraw.SetDrawScale(30.0);
+            debugDraw.SetFillAlpha(0.5);
+            debugDraw.SetLineThickness(1.0);
+            debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+            world.SetDebugDraw(debugDraw);
          
          window.setInterval(update, 1000 / 60);
          
@@ -165,9 +172,32 @@
 
             // add my view sync function, make div tag button sync rigid body
             (function(){
-            	var obj = document.querySelector('button#obj_body')
-            	obj.style.left = obj_body.position.x * 30;
-            	obj.style.top = obj_body.position.y * 30;
+                var obj = document.querySelector('button#obj_body')
+
+                obj.style.left = obj_fixture.GetBody().GetDefinition().position.x * 30;
+                obj.style.top = obj_fixture.GetBody().GetDefinition().position.y * 30;
+
+                // console.log(obj_fixture.GetBody().GetAngle());
+                obj.style.WebkitTransform = 'rotate(' + (obj_fixture.GetBody().GetAngle() * 180/Math.PI) + 'deg)';
+
+                // get shape
+                if(obj_fixture.GetShape().m_type == 1 && obj_fixture.GetShape().m_vertexCount == 4){
+                    // when it's polygon
+                    width = obj_fixture.GetShape().m_vertices[1].x - obj_fixture.GetShape().m_vertices[0].x;
+                    height = obj_fixture.GetShape().m_vertices[2].y - obj_fixture.GetShape().m_vertices[1].y;
+
+                    // make sync shape
+                    obj.style.width = parseInt(width * 30) + 'px';
+                    obj.style.height = parseInt(height * 30) + 'px';
+                }
+
+                obj.onclick = function(){
+                    // http://www.box2dflash.org/docs/2.1a/reference/Box2D/Dynamics/b2Body.html#ApplyForce()
+                    // add force to this obj
+                    obj_fixture.GetBody().ApplyForce(new b2Vec2(200, 100), new b2Vec2(10, 5));
+                }
+
+                // obj_fixture.GetShape();
             })();
          
             world.Step(1 / 60, 10, 10);
