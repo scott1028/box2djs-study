@@ -262,10 +262,35 @@
 
         mass = obj_rigibody.GetMass();
 
-        c_v_pos = new b2Vec2(300 * mass, -500 * mass);
+        c_v_pos = new b2Vec2(mass, 0);
 
-        obj_rigibody.ApplyForce(c_v_pos, c_pos);
+        // maybe can be used for obj moving
+        obj_rigibody.ApplyImpulse(c_v_pos, c_pos);
       };
+
+      // Reference: http://www.iforce2d.net/b2dtut/constant-speed
+      document.onkeydown = function(e){
+        if(e.keyCode == 37){
+          c_pos = obj_rigibody.GetWorldCenter();
+
+          mass = obj_rigibody.GetMass();
+
+          c_v_pos = new b2Vec2(-mass, 0);
+
+          // maybe can be used for obj moving
+          obj_rigibody.ApplyImpulse(c_v_pos, c_pos);
+        }
+        else if(e.keyCode == 39){
+          c_pos = obj_rigibody.GetWorldCenter();
+
+          mass = obj_rigibody.GetMass();
+
+          c_v_pos = new b2Vec2(mass, 0);
+
+          // maybe can be used for obj moving
+          obj_rigibody.ApplyImpulse(c_v_pos, c_pos);
+        }
+      }
    
    </script>
    
