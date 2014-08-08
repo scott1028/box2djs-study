@@ -10,6 +10,9 @@
       <div style="background-color: silver;width: 600px;height: 400px; float: left; position: relative;">
         <button id="obj_body" style="position: absolute;">I am Benny!</button>
       </div>
+
+      <button onclick="left();">Left</button>
+      <button onclick="right();">Right</button>
    </body>
    <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
    <script type="text/javascript">
@@ -190,11 +193,22 @@
                     obj.style.width = parseInt(width * 30) + 'px';
                     obj.style.height = parseInt(height * 30) + 'px';
                 }
+                
+                // for debug
+                obj_rigibody = obj_fixture.GetBody();
 
                 obj.onclick = function(){
                     // http://www.box2dflash.org/docs/2.1a/reference/Box2D/Dynamics/b2Body.html#ApplyForce()
                     // add force to this obj
-                    obj_fixture.GetBody().ApplyForce(new b2Vec2(200, 100), new b2Vec2(10, 5));
+                    // obj_fixture.GetBody().ApplyForce(new b2Vec2(200, 100), new b2Vec2(10, 5));
+
+                    c_pos = obj_rigibody.GetWorldCenter();
+
+                    mass = obj_rigibody.GetMass();
+
+                    c_v_pos = new b2Vec2(300 * mass, -500 * mass);
+
+                    obj_rigibody.ApplyForce(c_v_pos, c_pos);
                 }
 
                 // obj_fixture.GetShape();
@@ -231,6 +245,26 @@
          }
 
 
+      };
+
+      function left(){
+        c_pos = obj_rigibody.GetWorldCenter();
+
+        mass = obj_rigibody.GetMass();
+
+        c_v_pos = new b2Vec2(-300 * mass, -500 * mass);
+
+        obj_rigibody.ApplyForce(c_v_pos, c_pos);
+      };
+
+      function right(){
+        c_pos = obj_rigibody.GetWorldCenter();
+
+        mass = obj_rigibody.GetMass();
+
+        c_v_pos = new b2Vec2(300 * mass, -500 * mass);
+
+        obj_rigibody.ApplyForce(c_v_pos, c_pos);
       };
    
    </script>
