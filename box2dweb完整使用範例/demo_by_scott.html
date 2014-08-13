@@ -4,19 +4,31 @@
    </head>
    <body onload="init();">
       <!-- Box2D World -->
-      <canvas id="canvas" width="600" height="400" style="background-color:#333333;" ></canvas>
+      <canvas id="canvas" width="300" height="300" style="background-color:#333333;" ></canvas>
 
       <!-- My Game World -->
-      <div style="background-color: silver;width: 600px;height: 400px; float: left; position: relative;">
-        <button id="obj_body" style="position: absolute;">I am Benny!</button>
+      <div style="background-color: silver;width: 300px;height: 300px; float: left; position: relative; padding: 0px;">
+        <div id="obj_body" style="position: absolute;display: block; background-color: blue;"></div>
       </div>
 
       <button onclick="left();">Left</button>
       <button onclick="right();">Right</button>
    </body>
    <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
+
+   <script type="text/javascript">
+
+   var mouse_event = function(){
+    
+   };
+
+   </script>
+
    <script type="text/javascript">
       
+      // box2d 中 最小單位為 "米", 對應為螢幕的的 "像素" ( 1 : 1 ), 所以需要轉換不然很難看出來。 
+      var meter_to_pixel = 30.0;
+
       function init() {
          b2Vec2 = Box2D.Common.Math.b2Vec2
             ,  b2AABB = Box2D.Collision.b2AABB
@@ -47,49 +59,38 @@
          //create ground
          bodyDef.type = b2Body.b2_staticBody;
          fixDef.shape = new b2PolygonShape;
-         fixDef.shape.SetAsBox(20, 2);
-         bodyDef.position.Set(10, 400 / 30 + 1.8);
+
+         // box2d 最小單位為"米"，對應螢幕為 1: 30 像素，另外 box2d 原點在物件中心，HTML則是在左上角這兩點必須做轉換。
+         // box2d 座標系統為左上角 0, 0 往右下擴展。
+         // 地板
+         fixDef.shape.SetAsBox(5, 0.5);   // 5 * 2 * 30 = 300pix
+         bodyDef.position.Set(5, 9.5);    // (9.5 + 0.5) * 30 = 300pix
          world.CreateBody(bodyDef).CreateFixture(fixDef);
-         bodyDef.position.Set(10, -1.8);
+
+         // 屋頂
+         bodyDef.position.Set(5, 0.5);
          world.CreateBody(bodyDef).CreateFixture(fixDef);
-         fixDef.shape.SetAsBox(2, 14);
-         bodyDef.position.Set(-1.8, 13);
-         world.CreateBody(bodyDef).CreateFixture(fixDef);
-         bodyDef.position.Set(21.8, 13);
+
+         // 左牆
+         fixDef.shape.SetAsBox(0.5, 5);
+         bodyDef.position.Set(0.5, 5);
          world.CreateBody(bodyDef).CreateFixture(fixDef);
          
-         //create some objects
+         // 右牆
+         bodyDef.position.Set(9.5, 5);
+         world.CreateBody(bodyDef).CreateFixture(fixDef);
+         
+         // 產生一個 Cube
          bodyDef.type = b2Body.b2_dynamicBody;
-         for(var i = 0; i < 1; ++i) {
-            // if(Math.random() > 0.5) {
-            //    fixDef.shape = new b2PolygonShape;
-            //    fixDef.shape.SetAsBox(
-            //          Math.random() + 0.1 //half width
-            //       ,  Math.random() + 0.1 //half height
-            //    );
-            // } else {
-            //    fixDef.shape = new b2CircleShape(
-            //       Math.random() + 0.1 //radius
-            //    );
-            // }
-            fixDef.shape = new b2PolygonShape;
-            fixDef.shape.SetAsBox(
-                 Math.random() + 0.5 //half width
-              ,  Math.random() + 0.5 //half height
-            );
+         fixDef.shape = new b2PolygonShape;
+         fixDef.shape.SetAsBox(0.5, 0.5);  // 從中心點往外擴展 0.5 pix, 即 1 * 1 的大小, 相當 30pix * 30pix
 
-            bodyDef.position.x = Math.random() * 10;
-            bodyDef.position.y = Math.random() * 10;
-            
-            // rigibody instance handle
-            obj_fixture = world.CreateBody(bodyDef).CreateFixture(fixDef);   // can set physical property ...etc here
-            // obj_body_def = obj_fixture.GetBody();    // can get rotation ...etc info here
-            // obj_body = obj_body_def.GetDefinition();  // 
-
-            // window.obj_body = obj_body;
-         }
+         // 將這個 cube add To World
+         bodyDef.position.x = Math.random() * 10;
+         bodyDef.position.y = Math.random() * 10;
+         obj_fixture = world.CreateBody(bodyDef).CreateFixture(fixDef);
          
-         //setup debug draw
+         // setup debug draw
          var debugDraw = new b2DebugDraw();
             debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
             debugDraw.SetDrawScale(30.0);
@@ -100,85 +101,84 @@
          
          window.setInterval(update, 1000 / 60);
          
-         //mouse
-         
-         var mouseX, mouseY, mousePVec, isMouseDown, selectedBody, mouseJoint;
-         var canvasPosition = getElementPosition(document.getElementById("canvas"));
-         
-         document.addEventListener("mousedown", function(e) {
-            isMouseDown = true;
-            handleMouseMove(e);
-            document.addEventListener("mousemove", handleMouseMove, true);
-         }, true);
-         
-         document.addEventListener("mouseup", function() {
-            document.removeEventListener("mousemove", handleMouseMove, true);
-            isMouseDown = false;
-            mouseX = undefined;
-            mouseY = undefined;
-         }, true);
-         
-         function handleMouseMove(e) {
-            mouseX = (e.clientX - canvasPosition.x) / 30;
-            mouseY = (e.clientY - canvasPosition.y) / 30;
-         };
-         
-         function getBodyAtMouse() {
-            mousePVec = new b2Vec2(mouseX, mouseY);
-            var aabb = new b2AABB();
-            aabb.lowerBound.Set(mouseX - 0.001, mouseY - 0.001);
-            aabb.upperBound.Set(mouseX + 0.001, mouseY + 0.001);
-            
-            // Query the world for overlapping shapes.
+         // joint 部分
+         //   var mouseX, mouseY, mousePVec, isMouseDown, selectedBody, mouseJoint;
+         //   var canvasPosition = getElementPosition(document.getElementById("canvas"));
+           
+         //   document.addEventListener("mousedown", function(e) {
+         //      isMouseDown = true;
+         //      handleMouseMove(e);
+         //      document.addEventListener("mousemove", handleMouseMove, true);
+         //   }, true);
+           
+         //   document.addEventListener("mouseup", function() {
+         //      document.removeEventListener("mousemove", handleMouseMove, true);
+         //      isMouseDown = false;
+         //      mouseX = undefined;
+         //      mouseY = undefined;
+         //   }, true);
+           
+         //   function handleMouseMove(e) {
+         //      mouseX = (e.clientX - canvasPosition.x) / 30;
+         //      mouseY = (e.clientY - canvasPosition.y) / 30;
+         //   };
+           
+         //   function getBodyAtMouse() {
+         //      mousePVec = new b2Vec2(mouseX, mouseY);
+         //      var aabb = new b2AABB();
+         //      aabb.lowerBound.Set(mouseX - 0.001, mouseY - 0.001);
+         //      aabb.upperBound.Set(mouseX + 0.001, mouseY + 0.001);
+              
+         //      // Query the world for overlapping shapes.
 
-            selectedBody = null;
-            world.QueryAABB(getBodyCB, aabb);
-            return selectedBody;
-         }
+         //      selectedBody = null;
+         //      world.QueryAABB(getBodyCB, aabb);
+         //      return selectedBody;
+         //   }
 
-         function getBodyCB(fixture) {
-            if(fixture.GetBody().GetType() != b2Body.b2_staticBody) {
-               if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
-                  selectedBody = fixture.GetBody();
-                  return false;
-               }
-            }
-            return true;
-         }
+         // function getBodyCB(fixture) {
+         //    if(fixture.GetBody().GetType() != b2Body.b2_staticBody) {
+         //       if(fixture.GetShape().TestPoint(fixture.GetBody().GetTransform(), mousePVec)) {
+         //          selectedBody = fixture.GetBody();
+         //          return false;
+         //       }
+         //    }
+         //    return true;
+         // }
          
          //update
          
          function update() {
-         
-            if(isMouseDown && (!mouseJoint)) {
-               var body = getBodyAtMouse();
-               if(body) {
-                  var md = new b2MouseJointDef();
-                  md.bodyA = world.GetGroundBody();
-                  md.bodyB = body;
-                  md.target.Set(mouseX, mouseY);
-                  md.collideConnected = true;
-                  md.maxForce = 300.0 * body.GetMass();
-                  mouseJoint = world.CreateJoint(md);
-                  body.SetAwake(true);
-               }
-            }
-            
-            if(mouseJoint) {
-               if(isMouseDown) {
-                  mouseJoint.SetTarget(new b2Vec2(mouseX, mouseY));
-               } else {
-                  world.DestroyJoint(mouseJoint);
-                  mouseJoint = null;
-               }
-            }
+            // joint 部分
+              // if(isMouseDown && (!mouseJoint)) {
+              //    var body = getBodyAtMouse();
+              //    if(body) {
+              //       var md = new b2MouseJointDef();
+              //       md.bodyA = world.GetGroundBody();
+              //       md.bodyB = body;
+              //       md.target.Set(mouseX, mouseY);
+              //       md.collideConnected = true;
+              //       md.maxForce = 300.0 * body.GetMass();
+              //       mouseJoint = world.CreateJoint(md);
+              //       body.SetAwake(true);
+              //    }
+              // }
+              
+              // if(mouseJoint) {
+              //    if(isMouseDown) {
+              //       mouseJoint.SetTarget(new b2Vec2(mouseX, mouseY));
+              //    } else {
+              //       world.DestroyJoint(mouseJoint);
+              //       mouseJoint = null;
+              //    }
+              // }
 
             // add my view sync function, make div tag button sync rigid body
             (function(){
-                var obj = document.querySelector('button#obj_body')
+                var obj = document.querySelector('div                                                                                                                                                                         #obj_body')
 
-                obj.style.left = obj_fixture.GetBody().GetDefinition().position.x * 30;
-                obj.style.top = obj_fixture.GetBody().GetDefinition().position.y * 30;
+                obj.style.left = ( obj_fixture.GetBody().GetDefinition().position.x * meter_to_pixel - 15 ); // 因為 box2d 世界寬高的計算方式為中心點向外擴張, 所以要扣除半寬的像素
+                obj.style.top = ( obj_fixture.GetBody().GetDefinition().position.y * meter_to_pixel - 15 ); // (同上)
 
                 // console.log(obj_fixture.GetBody().GetAngle());
                 obj.style.WebkitTransform = 'rotate(' + (obj_fixture.GetBody().GetAngle() * 180/Math.PI) + 'deg)';
@@ -190,8 +190,8 @@
                     height = obj_fixture.GetShape().m_vertices[2].y - obj_fixture.GetShape().m_vertices[1].y;
 
                     // make sync shape
-                    obj.style.width = parseInt(width * 30) + 'px';
-                    obj.style.height = parseInt(height * 30) + 'px';
+                    obj.style.width = parseInt(width) * meter_to_pixel + 'px';
+                    obj.style.height = parseInt(height) * meter_to_pixel + 'px';
                 }
                 
                 // for debug
