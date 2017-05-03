@@ -6,7 +6,7 @@
       <h3>參考：https://code.google.com/p/box2dweb/wiki/BasicUsage</h3>
       <h3>參考：http://box2dweb-doc.readthedocs.io/ja/latest/01_world.html</h3>
       <canvas id="canvas" width="400" height="200"></canvas>
-      <div style="width: 20px; height: 20px; background-color: green; position: absolute; top: 230px;"></div>
+      <div style="width: 10px; height: 10px; background-color: green; position: absolute; top: 230px;"></div>
       <br />
       <button onclick="createObj()">Create</button>
    </body>
@@ -31,8 +31,8 @@
          
          // 定義一個世界( 左上角為 (0,0) 做標 )
          world = new b2World(
-               new b2Vec2(0, 10)    // gravity
-            ,  true                 // allow sleep
+            new b2Vec2(0, 80),   // gravity 80px
+            true                 // allow sleep
          );
          
          // 定義地面的摩擦係數等等數值
@@ -41,31 +41,31 @@
          fixDef.friction = 0.5;
          fixDef.restitution = 0.2;
          
-         // 定義地面
+         // 定義地面(於 canvas (200, 195) 為中心畫出高為 10 寬為 200 的長方形！)
          var bodyDef = new b2BodyDef;
          bodyDef.type = b2Body.b2_staticBody;
-         bodyDef.position.x = 20; // 位置
-         bodyDef.position.y = 15;
+         bodyDef.position.x = 200;  // pix
+         bodyDef.position.y = 195;  // pix
          fixDef.shape = new b2PolygonShape;
-         fixDef.shape.SetAsBox(20, 0.5);     // 寬高 (X-半徑, Y-半徑) -> 40 * 1
+         fixDef.shape.SetAsBox(200, 5);     // 寬高 (X-半徑, Y-半徑)
          world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
 
          // 左邊牆壁
          var bodyDef = new b2BodyDef;
          bodyDef.type = b2Body.b2_staticBody;
-         bodyDef.position.x = 1; // 位置
-         bodyDef.position.y = 5;
+         bodyDef.position.x = 5; // 位置
+         bodyDef.position.y = 100;
          fixDef.shape = new b2PolygonShape;
-         fixDef.shape.SetAsBox(1, 10);     // 寬高 (X-半徑, Y-半徑) -> 2 * 20
+         fixDef.shape.SetAsBox(5, 100);     // 寬高 (X-半徑, Y-半徑)
          world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
 
          // 右邊牆壁
          var bodyDef = new b2BodyDef;
          bodyDef.type = b2Body.b2_staticBody;
-         bodyDef.position.x = 19; // 位置
-         bodyDef.position.y = 5;
+         bodyDef.position.x = 395; // 位置
+         bodyDef.position.y = 100;
          fixDef.shape = new b2PolygonShape;
-         fixDef.shape.SetAsBox(0.5, 10);     // 寬高為 1 (中心點向上下左右各長 0.5 單位)
+         fixDef.shape.SetAsBox(5, 100);     // 寬高為 10 (中心點向上下左右各長 100 單位 -> 200px )
          world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
          
          // 隨機產生一些 剛體碰撞器 + 材質 的物件丟到世界
@@ -74,15 +74,15 @@
             if(Math.random() > 0.5) {
                fixDef.shape = new b2PolygonShape;
                fixDef.shape.SetAsBox(
-                     Math.random() + 0.1 //half width
-                  ,  Math.random() + 0.1 //half height
+                     (Math.random() + 0.1) * 10 //half width
+                  ,  (Math.random() + 0.1) * 10 //half height
                );
             } else {
                fixDef.shape = new b2CircleShape(
-                  Math.random() + 0.1 //radius
+                  (Math.random() + 0.1) * 10 //radius
                );
             }
-            bodyDef.position.x = Math.random() * 15+2;
+            bodyDef.position.x = Math.random() * 350;
             bodyDef.position.y = Math.random() * 10;
             let obj = world.CreateBody(bodyDef).CreateFixture(fixDef);
             objs.push(obj);
@@ -94,7 +94,7 @@
          // 定義 Debug 宣染標的
          var debugDraw = new b2DebugDraw();
 			debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
-			debugDraw.SetDrawScale(10.0);  // box2d World to canvas 的座標 Scale 比率(set to 10 is similar to HTML World), 寬高 (X-半徑, Y-半徑)
+			debugDraw.SetDrawScale(1.0);  // box2d World to canvas 的座標 Scale 比率(set to 1 is similar to HTML World), 寬高 (X-半徑, Y-半徑)
 			debugDraw.SetFillAlpha(0.3);
 			debugDraw.SetLineThickness(1.0);
 			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
