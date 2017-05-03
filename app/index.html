@@ -100,7 +100,8 @@
 			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
 			world.SetDebugDraw(debugDraw);
          
-         window.setInterval(update, 1000 / 60);
+         // window.setInterval(update, 1000 / 60);
+         requestAnimationFrame(update);
 
          // debug obj
          //    >> polygonShape.SetAsBox(2, 1); //a 4x2 rectangle
@@ -126,7 +127,8 @@
                // let pos = $$obj.m_body.GetWorldPoint(new b2Vec2(0, 0));  // get Body position, relative to world origin -> (0, 0).
                let pos = $$obj.m_body.GetPosition();  // get Body position, relative to world origin -> (0, 0).
                let pos_angle = $$obj.m_body.GetAngle();  // get Body position, relative to world origin -> (0, 0).
-               console.log(pos, pos_angle, pos_angle * 180 / Math.PI);
+               let movingDiff = $$obj.m_body.GetLinearVelocity();  // 可以用來偵測物件移動幾乎趨近沒有移動用來設定 Sleep 省資源
+               console.log(pos, pos_angle, pos_angle * 180 / Math.PI, movingDiff);
             }, 300);
          };
       };
@@ -144,6 +146,9 @@
          
          // 不確定功能(清除向量?)
          world.ClearForces();
+
+         //
+         requestAnimationFrame(update);
       };
    
    </script>
