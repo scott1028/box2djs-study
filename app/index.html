@@ -37,9 +37,9 @@
          
          // 定義地面的摩擦係數等等數值
          var fixDef = new b2FixtureDef;
-         fixDef.density = 1.0;
-         fixDef.friction = 0.5;
-         fixDef.restitution = 0.2;
+         fixDef.density = 5.0;
+         fixDef.friction = 2;
+         fixDef.restitution = 0.5;  // 愈高愈不容易 Sleep Obj(持續計算反彈到趨近 0)
          
          // 定義地面(於 canvas (200, 195) 為中心畫出高為 10 寬為 200 的長方形！)
          var bodyDef = new b2BodyDef;
@@ -126,7 +126,7 @@
                // let pos = $$obj.m_body.GetWorldPoint(new b2Vec2(0, 0));  // get Body position, relative to world origin -> (0, 0).
                let pos = $$obj.m_body.GetPosition();  // get Body position, relative to world origin -> (0, 0).
                let pos_angle = $$obj.m_body.GetAngle();  // get Body position, relative to world origin -> (0, 0).
-               console.log(pos, pos_angle);
+               console.log(pos, pos_angle, pos_angle * 180 / Math.PI);
             }, 300);
          };
       };
