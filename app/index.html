@@ -3,14 +3,17 @@
       <title>Box2dWeb example</title>
    </head>
    <body onload="init();">
-      <h1>參考：https://code.google.com/p/box2dweb/wiki/BasicUsage</h1>
-      <h1>參考：http://box2dweb-doc.readthedocs.io/ja/latest/01_world.html</h1>
-      <canvas id="canvas" width="600" height="400"></canvas>
+      <h3>參考：https://code.google.com/p/box2dweb/wiki/BasicUsage</h3>
+      <h3>參考：http://box2dweb-doc.readthedocs.io/ja/latest/01_world.html</h3>
+      <canvas id="canvas" width="400" height="200"></canvas>
       <div style="width: 20px; height: 20px; background-color: green; position: absolute; top: 230px;"></div>
+      <br />
+      <button onclick="createObj()">Create</button>
    </body>
    <script type="text/javascript" src="Box2dWeb-2.1.a.3.min.js"></script>
    <script type="text/javascript">
       var world;
+      var objs = [];
       
       function init() {
          // import 需要的 Class 與 Factory
@@ -42,9 +45,9 @@
          var bodyDef = new b2BodyDef;
          bodyDef.type = b2Body.b2_staticBody;
          bodyDef.position.x = 20; // 位置
-         bodyDef.position.y = 13;
+         bodyDef.position.y = 15;
          fixDef.shape = new b2PolygonShape;
-         fixDef.shape.SetAsBox(20, 0.5);     // 寬高 (X-半徑, Y-半徑)
+         fixDef.shape.SetAsBox(20, 0.5);     // 寬高 (X-半徑, Y-半徑) -> 40 * 1
          world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
 
          // 左邊牆壁
@@ -53,7 +56,7 @@
          bodyDef.position.x = 1; // 位置
          bodyDef.position.y = 5;
          fixDef.shape = new b2PolygonShape;
-         fixDef.shape.SetAsBox(1, 10);     // 寬高 (X-半徑, Y-半徑)
+         fixDef.shape.SetAsBox(1, 10);     // 寬高 (X-半徑, Y-半徑) -> 2 * 20
          world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
 
          // 右邊牆壁
@@ -81,7 +84,9 @@
             }
             bodyDef.position.x = Math.random() * 15+2;
             bodyDef.position.y = Math.random() * 10;
-            world.CreateBody(bodyDef).CreateFixture(fixDef);
+            let obj = world.CreateBody(bodyDef).CreateFixture(fixDef);
+            objs.push(obj);
+
          }
 
          // TODO: 利用 Box2D 內物理物件的運動座標與旋轉參數來更新畫面
@@ -89,13 +94,39 @@
          // 定義 Debug 宣染標的
          var debugDraw = new b2DebugDraw();
 			debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
-			debugDraw.SetDrawScale(10.0);  // box2d World to canvas 的座標 Scale 比率(set to 10 is equal HTML World), 寬高 (X-半徑, Y-半徑)
+			debugDraw.SetDrawScale(10.0);  // box2d World to canvas 的座標 Scale 比率(set to 10 is similar to HTML World), 寬高 (X-半徑, Y-半徑)
 			debugDraw.SetFillAlpha(0.3);
 			debugDraw.SetLineThickness(1.0);
 			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
 			world.SetDebugDraw(debugDraw);
          
          window.setInterval(update, 1000 / 60);
+
+         // debug obj
+         //    >> polygonShape.SetAsBox(2, 1); //a 4x2 rectangle
+         //    >> myBodyDef.position.Set(10,20); //a bit to the right
+         window.createObj = function(){
+            let bodyType = b2Body.b2_dynamicBody;
+            let fixDef = new b2FixtureDef;
+            
+            // 物理刪參數
+            fixDef.density = 1.0;
+            fixDef.friction = 0.5;
+            fixDef.restitution = 0.2;
+            // 物理形狀
+            fixDef.shape = new b2PolygonShape;
+            fixDef.shape.SetAsBox(1, 1);
+            // 剛體座標
+            bodyDef.position.x = 30;
+            bodyDef.position.y = 10;
+            
+            window.$$obj = world.CreateBody(bodyDef).CreateFixture(fixDef);
+
+            setInterval(function(){
+               let pos = $$obj.m_body.GetWorldPoint(new b2Vec2(0, 0));  // get Body position, relative to world origin -> (0, 0).
+               console.log(pos);
+            }, 300);
+         };
       };
       
       // 執行宣染事件
@@ -106,7 +137,7 @@
             ,  10       //position iterations
          );
 
-         // 讓物理世界更新資料
+         // 讓 Debug 物理世界更新資料
          world.DrawDebugData();
          
          // 不確定功能(清除向量?)
