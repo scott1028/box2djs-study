@@ -4,7 +4,9 @@
    </head>
    <body onload="init();">
       <h1>參考：https://code.google.com/p/box2dweb/wiki/BasicUsage</h1>
+      <h1>參考：http://box2dweb-doc.readthedocs.io/ja/latest/01_world.html</h1>
       <canvas id="canvas" width="600" height="400"></canvas>
+      <div style="width: 20px; height: 20px; background-color: green; position: absolute; top: 230px;"></div>
    </body>
    <script type="text/javascript" src="Box2dWeb-2.1.a.3.min.js"></script>
    <script type="text/javascript">
@@ -42,7 +44,7 @@
          bodyDef.position.x = 20; // 位置
          bodyDef.position.y = 13;
          fixDef.shape = new b2PolygonShape;
-         fixDef.shape.SetAsBox(20, 0.5);     // 寬高
+         fixDef.shape.SetAsBox(20, 0.5);     // 寬高 (X-半徑, Y-半徑)
          world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
 
          // 左邊牆壁
@@ -51,7 +53,7 @@
          bodyDef.position.x = 1; // 位置
          bodyDef.position.y = 5;
          fixDef.shape = new b2PolygonShape;
-         fixDef.shape.SetAsBox(0.5, 10);     // 寬高
+         fixDef.shape.SetAsBox(1, 10);     // 寬高 (X-半徑, Y-半徑)
          world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
 
          // 右邊牆壁
@@ -81,11 +83,13 @@
             bodyDef.position.y = Math.random() * 10;
             world.CreateBody(bodyDef).CreateFixture(fixDef);
          }
+
+         // TODO: 利用 Box2D 內物理物件的運動座標與旋轉參數來更新畫面
          
          // 定義 Debug 宣染標的
          var debugDraw = new b2DebugDraw();
 			debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
-			debugDraw.SetDrawScale(30.0);
+			debugDraw.SetDrawScale(10.0);  // box2d World to canvas 的座標 Scale 比率(set to 10 is equal HTML World), 寬高 (X-半徑, Y-半徑)
 			debugDraw.SetFillAlpha(0.3);
 			debugDraw.SetLineThickness(1.0);
 			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
