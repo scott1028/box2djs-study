@@ -82,7 +82,7 @@
                   (Math.random() + 0.1) * 10 //radius
                );
             }
-            bodyDef.position.x = Math.random() * 350;
+            bodyDef.position.x = Math.random() * 355 + 25;
             bodyDef.position.y = Math.random() * 10;
             let obj = world.CreateBody(bodyDef).CreateFixture(fixDef);
             objs.push(obj);
@@ -115,16 +115,18 @@
             fixDef.restitution = 0.2;
             // 物理形狀
             fixDef.shape = new b2PolygonShape;
-            fixDef.shape.SetAsBox(1, 1);
+            fixDef.shape.SetAsBox(20, 20);
             // 剛體座標
-            bodyDef.position.x = 30;
+            bodyDef.position.x = 200;
             bodyDef.position.y = 10;
             
             window.$$obj = world.CreateBody(bodyDef).CreateFixture(fixDef);
 
             setInterval(function(){
-               let pos = $$obj.m_body.GetWorldPoint(new b2Vec2(0, 0));  // get Body position, relative to world origin -> (0, 0).
-               console.log(pos);
+               // let pos = $$obj.m_body.GetWorldPoint(new b2Vec2(0, 0));  // get Body position, relative to world origin -> (0, 0).
+               let pos = $$obj.m_body.GetPosition();  // get Body position, relative to world origin -> (0, 0).
+               let pos_angle = $$obj.m_body.GetAngle();  // get Body position, relative to world origin -> (0, 0).
+               console.log(pos, pos_angle);
             }, 300);
          };
       };
