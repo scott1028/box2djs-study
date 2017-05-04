@@ -10,7 +10,7 @@
       <br />
       <button onclick="createObj()">Create</button>
    </body>
-   <script type="text/javascript" src="Box2dWeb-2.1.a.3.min.js"></script>
+   <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
    <script type="text/javascript">
       var world;
       var objs = [];
@@ -69,7 +69,7 @@
          bodyDef.position.y = 100;
          fixDef.shape = new b2PolygonShape;
          fixDef.shape.SetAsBox(5, 100);     // 寬高為 10 (中心點向上下左右各長 100 單位 -> 200px )
-         world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
+         window.rightWall = world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
          
          // 隨機產生一些 剛體碰撞器 + 材質 的物件丟到世界
          bodyDef.type = b2Body.b2_dynamicBody;
@@ -111,11 +111,15 @@
          //    >> polygonShape.SetAsBox(2, 1); //a 4x2 rectangle
          //    >> myBodyDef.position.Set(10,20); //a bit to the right
          window.createObj = function(){
-            let bodyType = b2Body.b2_dynamicBody;
+            let bodyType = b2Body.b2_dynamicBody;  // 動態物體(接受力量 & 速度影響), 搭配重力 Y 軸 ApplyForce 抵消可以做出費似 Spaceship 效果！
+            // let bodyType = b2Body.b2_staticBody;  // 靜態物體
+            // let bodyType = b2Body.b2_kinematicBody;  // 自由物體(只受速度影響, 力量無效)
+            let bodyDef = new b2BodyDef;
+            bodyDef.type = bodyType;
             let fixDef = new b2FixtureDef;
             
             // 物理刪參數
-            fixDef.density = 1.0;
+            fixDef.density = 1;  // 
             fixDef.friction = 0.5;
             fixDef.restitution = 0.2;
             // 物理形狀
@@ -126,6 +130,38 @@
             bodyDef.position.y = 10;
             
             window.$$obj = world.CreateBody(bodyDef).CreateFixture(fixDef);
+            $$obj.m_body.SetBullet(true);
+
+            // 
+            // $$obj.m_body.ApplyImpulse(new b2Vec2(7000000, 0), $$obj.m_body.GetPosition());
+            // $$obj.m_body.ApplyForce(new b2Vec2(7000000, 0), $$obj.m_body.GetPosition());
+            // $$obj.m_body.SetLinearVelocity({x: 100, y: 0});  // 線性速度
+            // $$obj.m_body.SetAngularVelocity(2);  // 旋轉角速度
+            // Ref: http://www.iforce2d.net/b2dtut/custom-gravity
+
+            // about: line-7722
+            /*
+               p1 = body1.GetWorldCenter();
+               p2 = body2.GetWorldCenter();
+               dx = p2.x - p1.x;
+               dy = p2.y - p1.y;
+               r2 = dx * dx + dy * dy;
+               if (r2 < Number.MIN_VALUE) continue;
+               f = new b2Vec2(dx, dy);
+               f.Multiply(this.G / r2 / Math.sqrt(r2) * mass1 * body2.GetMass());
+               if (body1.IsAwake()) body1.ApplyForce(f, p1);
+               f.Multiply((-1));
+               if (body2.IsAwake()) body2.ApplyForce(f, p2);
+            */
+            $$obj.m_body.ApplyForce(new b2Vec2(
+               0 /*80 * $$obj.m_body.m_mass*/,
+               -1 * world.GetGravity().y * $$obj.m_body.m_mass), $$obj.m_body.GetWorldCenter());  // 抵消重力
+            $$obj.m_body.SetLinearVelocity({x: 100, y: 0});
+
+            // test set position
+            setTimeout(function(){
+               $$obj.m_body.SetPosition({x: 0, y: 0});
+            }, 3000);
 
             setInterval(function(){
                // let pos = $$obj.m_body.GetWorldPoint(new b2Vec2(0, 0));  // get Body position, relative to world origin -> (0, 0).
@@ -148,8 +184,8 @@
          // 讓 Debug 物理世界更新資料
          world.DrawDebugData();
          
-         // 不確定功能(清除向量?)
-         world.ClearForces();
+         // 不確定功能(清除向量? 會讓 Spaceship Gravity 抵消無效)
+         // world.ClearForces();
 
          //
          requestAnimationFrame(update);
