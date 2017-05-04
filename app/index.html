@@ -27,6 +27,7 @@
          	,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
          	,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
          	,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+            ,  b2ContactListener = Box2D.Dynamics.b2ContactListener
             ;
          
          // 定義一個世界( 左上角為 (0,0) 做標 )
@@ -34,6 +35,31 @@
             new b2Vec2(0, 80),   // gravity 80px
             true                 // allow sleep
          );
+
+         // add Collision Event Listener
+         var handler = new b2ContactListener;
+         handler.BeginContact = function(c){
+            var body_a = c.GetFixtureA().m_body;
+            var body_b = c.GetFixtureB().m_body;
+            // var set = new Set();
+            var set = {};
+            set[body_a.GetUserData()] = body_a;
+            set[body_b.GetUserData()] = body_b;
+            if( set.hasOwnProperty('isBall') && set.hasOwnProperty('isWall') ){
+               if(!set.isBall.enableGravity)
+                  set.isBall.ApplyForce({x: 0, y: world.GetGravity().y * set.isBall.m_mass}, set.isBall.GetWorldCenter());
+               set.isBall.enableGravity = true;
+            }
+            else if(body_a.GetUserData() === 'isBall' && body_b.GetUserData() === 'isBall'){
+               if(!body_a.enableGravity)
+                  body_a.ApplyForce({x: 0, y: world.GetGravity().y * body_a.m_mass}, body_a.GetWorldCenter());
+               if(!body_b.enableGravity)
+                  body_b.ApplyForce({x: 0, y: world.GetGravity().y * body_b.m_mass}, body_b.GetWorldCenter());
+               body_a.enableGravity = true;
+               body_b.enableGravity = true;
+            };
+         };
+         world.SetContactListener(handler);
          
          // 定義地面的摩擦係數等等數值
          var fixDef = new b2FixtureDef;
@@ -60,7 +86,8 @@
          bodyDef.position.y = 100;
          fixDef.shape = new b2PolygonShape;
          fixDef.shape.SetAsBox(5, 100);     // 寬高 (X-半徑, Y-半徑)
-         world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
+         var wall = world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
+         wall.m_body.SetUserData('isWall');
 
          // 右邊牆壁
          var bodyDef = new b2BodyDef;
@@ -70,6 +97,7 @@
          fixDef.shape = new b2PolygonShape;
          fixDef.shape.SetAsBox(5, 100);     // 寬高為 10 (中心點向上下左右各長 100 單位 -> 200px )
          window.rightWall = world.CreateBody(bodyDef).CreateFixture(fixDef);   // 使用 factory method 加入 world
+         rightWall.m_body.SetUserData('isWall');
          
          // 隨機產生一些 剛體碰撞器 + 材質 的物件丟到世界
          bodyDef.type = b2Body.b2_dynamicBody;
@@ -131,6 +159,7 @@
             
             window.$$obj = world.CreateBody(bodyDef).CreateFixture(fixDef);
             $$obj.m_body.SetBullet(true);
+            $$obj.m_body.SetUserData('isBall');
 
             // 
             // $$obj.m_body.ApplyImpulse(new b2Vec2(7000000, 0), $$obj.m_body.GetPosition());
@@ -160,8 +189,10 @@
 
             // test set position
             setTimeout(function(){
+               if($$obj.m_body.GetUserData() === 'isBall')
+                  return;
                $$obj.m_body.SetPosition({x: 0, y: 0});
-            }, 3000);
+            }, 6000);
 
             setInterval(function(){
                // let pos = $$obj.m_body.GetWorldPoint(new b2Vec2(0, 0));  // get Body position, relative to world origin -> (0, 0).
