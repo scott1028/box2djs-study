@@ -13,7 +13,6 @@
       <button onclick="addImpluse()">ImpluseUp</button>
       <button onclick="addForceLeft()">ForceLeft</button>
       <button onclick="addImpluseLeft()">ImpluseLeft</button>
-      <button onclick="addForceZero()">ForceZero</button>
       <button onclick="ChangeAccelerateCap()">ChangeAccelerateCap</button>
       <button onclick="MovingButton()">MovingButton</button>
    </body>
@@ -247,14 +246,17 @@
       (function(){
          window.hold = false;
          document.onkeydown = function(e){
-            window.$$obj.toLeft = true;
+            if(e.keyCode === 39)
+               window.$$obj.toLeft = true;
+            else if(e.keyCode === 37)
+               window.$$obj.toLeft = false;
             window.hold = true;
             console.warn(window.hold);
             console.warn(e);
          };
 
          document.onkeyup = function(e){
-            window.$$obj.toLeft = false;
+            // window.$$obj.toLeft = false;
             window.hold = false;
             console.warn(window.hold);
             console.warn(e);
@@ -270,8 +272,17 @@
          );
 
          // moving continue when Button Click
-         if(window.$$obj && window.$$obj.toLeft && window.hold){
-            window.addImpluseLeft();
+         if(window.$$obj && window.hold){
+            if(!window.$$obj.toLeft){
+               window.$$obj.m_body.ApplyImpulse({
+                  x: -1 * world.GetGravity().y * $$obj.m_body.m_mass,
+                  y: 0 }, $$obj.m_body.GetWorldCenter());
+            }
+            else{
+               window.$$obj.m_body.ApplyImpulse({
+                  x: +1 * world.GetGravity().y * $$obj.m_body.m_mass,
+                  y: 0 }, $$obj.m_body.GetWorldCenter());
+            }
          };
 
          // 讓 Debug 物理世界更新資料
