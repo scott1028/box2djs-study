@@ -199,6 +199,7 @@
                0 /*80 * $$obj.m_body.m_mass*/,
                -1 * world.GetGravity().y * $$obj.m_body.m_mass), $$obj.m_body.GetWorldCenter());  // 抵消重力
             $$obj.m_body.SetLinearVelocity({x: 100, y: 0});
+            $$obj.m_body.SetFixedRotation(true);
 
             // test set position
             setTimeout(function(){
@@ -246,6 +247,7 @@
       (function(){
          window.hold = false;
          document.onkeydown = function(e){
+            // $$obj.m_body.SetFixedRotation(true);
             if(e.keyCode === 39)
                window.$$obj.toLeft = true;
             else if(e.keyCode === 37)
@@ -256,6 +258,7 @@
          };
 
          document.onkeyup = function(e){
+            // $$obj.m_body.SetFixedRotation(true);
             // window.$$obj.toLeft = false;
             window.hold = false;
             console.warn(window.hold);
