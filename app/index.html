@@ -5,10 +5,15 @@
    <body onload="init();">
       <h3>參考：https://code.google.com/p/box2dweb/wiki/BasicUsage</h3>
       <h3>參考：http://box2dweb-doc.readthedocs.io/ja/latest/01_world.html</h3>
+      <h5>box2d 唯一不像物理的部份是 "加速度(ApplyForce & Gravity)" 有上限(max=2)</h5>
       <canvas id="canvas" width="400" height="200"></canvas>
       <div style="width: 10px; height: 10px; background-color: green; position: absolute; top: 230px;"></div>
       <br />
       <button onclick="createObj()">Create</button>
+      <button onclick="addImpluse()">ImpluseUp</button>
+      <button onclick="addForce()">ForceLeft</button>
+      <button onclick="addForceZero()">ForceZero</button>
+      <button onclick="ChangeAccelerateCap()">ChangeAccelerateCap</button>
    </body>
    <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
    <script type="text/javascript">
@@ -46,15 +51,17 @@
             set[body_a.GetUserData()] = body_a;
             set[body_b.GetUserData()] = body_b;
             if( set.hasOwnProperty('isBall') && set.hasOwnProperty('isWall') ){
-               if(!set.isBall.enableGravity)
-                  set.isBall.ApplyForce({x: 0, y: world.GetGravity().y * set.isBall.m_mass}, set.isBall.GetWorldCenter());
+               if(!set.isBall.enableGravity){
+                  // set.isBall.ApplyForce({x: 0, y: world.GetGravity().y * set.isBall.m_mass}, set.isBall.GetWorldCenter());  // 讓物體看起來更重(跟質量無關)
+                  set.isBall.ApplyForce({x: 0, y: 5 * world.GetGravity().y * set.isBall.m_mass}, set.isBall.GetWorldCenter());
+               }
                set.isBall.enableGravity = true;
             }
             else if(body_a.GetUserData() === 'isBall' && body_b.GetUserData() === 'isBall'){
                if(!body_a.enableGravity)
-                  body_a.ApplyForce({x: 0, y: world.GetGravity().y * body_a.m_mass}, body_a.GetWorldCenter());
+                  body_a.ApplyForce({x: 0, y: 5 * world.GetGravity().y * body_a.m_mass}, body_a.GetWorldCenter());
                if(!body_b.enableGravity)
-                  body_b.ApplyForce({x: 0, y: world.GetGravity().y * body_b.m_mass}, body_b.GetWorldCenter());
+                  body_b.ApplyForce({x: 0, y: 5 * world.GetGravity().y * body_b.m_mass}, body_b.GetWorldCenter());
                body_a.enableGravity = true;
                body_b.enableGravity = true;
             };
@@ -149,7 +156,7 @@
             // 物理刪參數
             fixDef.density = 1;  // 
             fixDef.friction = 0.5;
-            fixDef.restitution = 0.2;
+            fixDef.restitution = 0.1;
 
             // Collision Filter
             fixDef.filter.categoryBits = 2;  // 0x0000000000000010 (自己的類別)
@@ -206,6 +213,28 @@
                let movingDiff = $$obj.m_body.GetLinearVelocity();  // 可以用來偵測物件移動幾乎趨近沒有移動用來設定 Sleep 省資源
                console.log(pos, pos_angle, pos_angle * 180 / Math.PI, movingDiff);
             }, 300);
+         };
+
+         window.addImpluse = function(){
+            window.$$obj.m_body.ApplyImpulse(new b2Vec2(
+               0 /*80 * $$obj.m_body.m_mass*/,
+              -2 * world.GetGravity().y * $$obj.m_body.m_mass), $$obj.m_body.GetWorldCenter());  // 抵消重力
+         };
+
+         window.addForce = function(){
+            window.$$obj.m_body.ApplyImpulse(new b2Vec2(
+               -2 * world.GetGravity().y * $$obj.m_body.m_mass,
+               0), $$obj.m_body.GetWorldCenter());
+         };
+
+         window.addForceZero = function(){
+            window.$$obj.m_body.ApplyImpulse(new b2Vec2(
+               0,
+               0), $$obj.m_body.GetWorldCenter());
+         };
+
+         window.ChangeAccelerateCap = function(){
+            Box2D.Common.b2Settings.b2_maxTranslation = 2;
          };
       };
       
