@@ -150,6 +150,11 @@
             fixDef.density = 1;  // 
             fixDef.friction = 0.5;
             fixDef.restitution = 0.2;
+
+            // Collision Filter
+            fixDef.filter.categoryBits = 2;  // 0x0000000000000010 (自己的類別)
+            fixDef.filter.maskBits = 65533;  // 0x1111111111111101 (與自己不會碰撞)
+
             // 物理形狀
             fixDef.shape = new b2PolygonShape;
             fixDef.shape.SetAsBox(20, 20);
