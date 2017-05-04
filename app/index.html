@@ -11,9 +11,11 @@
       <br />
       <button onclick="createObj()">Create</button>
       <button onclick="addImpluse()">ImpluseUp</button>
-      <button onclick="addForce()">ForceLeft</button>
+      <button onclick="addForceLeft()">ForceLeft</button>
+      <button onclick="addImpluseLeft()">ImpluseLeft</button>
       <button onclick="addForceZero()">ForceZero</button>
       <button onclick="ChangeAccelerateCap()">ChangeAccelerateCap</button>
+      <button onclick="MovingButton()">MovingButton</button>
    </body>
    <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
    <script type="text/javascript">
@@ -221,22 +223,43 @@
               -2 * world.GetGravity().y * $$obj.m_body.m_mass), $$obj.m_body.GetWorldCenter());  // 抵消重力
          };
 
-         window.addForce = function(){
+         window.addForceLeft = function(){
             window.$$obj.m_body.ApplyImpulse(new b2Vec2(
                -2 * world.GetGravity().y * $$obj.m_body.m_mass,
                0), $$obj.m_body.GetWorldCenter());
          };
 
-         window.addForceZero = function(){
+         window.addImpluseLeft = function(){
             window.$$obj.m_body.ApplyImpulse(new b2Vec2(
-               0,
+               -1 * world.GetGravity().y * $$obj.m_body.m_mass,
                0), $$obj.m_body.GetWorldCenter());
          };
 
          window.ChangeAccelerateCap = function(){
             Box2D.Common.b2Settings.b2_maxTranslation = 2;
          };
+
+         window.MovingButton = function(){
+            window.$$obj.toLeft = true;
+         }
       };
+
+      (function(){
+         window.hold = false;
+         document.onkeydown = function(e){
+            window.$$obj.toLeft = true;
+            window.hold = true;
+            console.warn(window.hold);
+            console.warn(e);
+         };
+
+         document.onkeyup = function(e){
+            window.$$obj.toLeft = false;
+            window.hold = false;
+            console.warn(window.hold);
+            console.warn(e);
+         };
+      })();
       
       // 執行宣染事件
       function update() {
@@ -245,6 +268,11 @@
             ,  10       //velocity iterations
             ,  10       //position iterations
          );
+
+         // moving continue when Button Click
+         if(window.$$obj && window.$$obj.toLeft && window.hold){
+            window.addImpluseLeft();
+         };
 
          // 讓 Debug 物理世界更新資料
          world.DrawDebugData();
