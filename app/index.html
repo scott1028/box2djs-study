@@ -273,15 +273,25 @@
 
          // moving continue when Button Click
          if(window.$$obj && window.hold){
+            // $$obj.m_body.GetWorldCenter()
+            // 可以改為施力在左下角避免旋轉
+            var pos = {
+               x: $$obj.m_body.GetWorldCenter().x,
+               y: $$obj.m_body.GetWorldCenter().y
+            };
             if(!window.$$obj.toLeft){
+               // pos.x += 20;
+               // pos.y += 20;
                window.$$obj.m_body.ApplyImpulse({
                   x: -1 * world.GetGravity().y * $$obj.m_body.m_mass,
-                  y: 0 }, $$obj.m_body.GetWorldCenter());
+                  y: 0 }, pos);
             }
             else{
+               // pos.x -= 20;
+               // pos.y += 20;
                window.$$obj.m_body.ApplyImpulse({
                   x: +1 * world.GetGravity().y * $$obj.m_body.m_mass,
-                  y: 0 }, $$obj.m_body.GetWorldCenter());
+                  y: 0 }, pos);
             }
          };
 
