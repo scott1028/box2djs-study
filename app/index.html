@@ -15,7 +15,7 @@
       <button onclick="addImpluseLeft()">ImpluseLeft</button>
       <button onclick="ChangeAccelerateCap()">ChangeAccelerateCap</button>
       <button onclick="MovingButton()">MovingButton</button>
-      <button onclick="JointsButton()">JointsButton</button>
+      <button onclick="DistanceJointsButton()">DistanceJointsButton</button>
    </body>
    <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
    <script type="text/javascript">
@@ -245,7 +245,9 @@
             window.$$obj.toLeft = true;
          };
 
-         window.JointsButton = function(){
+         window.DistanceJointsButton = function(){
+            const fixedRotate = Math.random() < 0.5 ? true: false;
+
             var createBody = function(){
                // create body
                fixDef.shape = new b2PolygonShape;
@@ -255,6 +257,10 @@
                );
                bodyDef.position.x = Math.random() * 355 + 25;
                bodyDef.position.y = Math.random() * 50;
+
+               // setup
+               bodyDef.fixedRotation = fixedRotate;
+
                let obj = world.CreateBody(bodyDef).CreateFixture(fixDef);
                return obj.m_body;
             };
@@ -263,6 +269,15 @@
                var joint = new b2Joints.b2DistanceJointDef;
                joint.bodyA = bodyA;
                joint.bodyB = bodyB;
+               // bodyA.SetBullet(true);
+               // bodyB.SetBullet(true);
+               // joint.dampingRate = 100;
+
+               // 相互距離保持(產生推拉力)
+               joint.length = Box2D.Common.Math.b2Math.Distance(bodyA.GetPosition(), bodyB.GetPosition());
+               
+               // joint.collideConnected  = true;
+
                // set connect anchor of two body's origin( bodyA: 0, 0 --> bodyB: 0, 0 )
                joint.localAnchorA = joint.bodyA.GetLocalCenter();
                joint.localAnchorB = joint.bodyB.GetLocalCenter();
