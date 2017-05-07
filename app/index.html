@@ -15,6 +15,7 @@
       <button onclick="addImpluseLeft()">ImpluseLeft</button>
       <button onclick="ChangeAccelerateCap()">ChangeAccelerateCap</button>
       <button onclick="MovingButton()">MovingButton</button>
+      <button onclick="JointsButton()">JointsButton</button>
    </body>
    <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
    <script type="text/javascript">
@@ -34,6 +35,7 @@
          	,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
          	,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw
             ,  b2ContactListener = Box2D.Dynamics.b2ContactListener
+            ,  b2Joints = Box2D.Dynamics.Joints
             ;
          
          // 定義一個世界( 左上角為 (0,0) 做標 )
@@ -241,7 +243,39 @@
 
          window.MovingButton = function(){
             window.$$obj.toLeft = true;
-         }
+         };
+
+         window.JointsButton = function(){
+            var createBody = function(){
+               // create body
+               fixDef.shape = new b2PolygonShape;
+               fixDef.shape.SetAsBox(
+                     (Math.random() + 0.1) * 10 //half width
+                  ,  (Math.random() + 0.1) * 10 //half height
+               );
+               bodyDef.position.x = Math.random() * 355 + 25;
+               bodyDef.position.y = Math.random() * 50;
+               let obj = world.CreateBody(bodyDef).CreateFixture(fixDef);
+               return obj.m_body;
+            };
+
+            var setJoint = function(bodyA, bodyB){
+               var joint = new b2Joints.b2DistanceJointDef;
+               joint.bodyA = bodyA;
+               joint.bodyB = bodyB;
+               // set connect anchor of two body's origin( bodyA: 0, 0 --> bodyB: 0, 0 )
+               joint.localAnchorA = joint.bodyA.GetLocalCenter();
+               joint.localAnchorB = joint.bodyB.GetLocalCenter();
+               world.CreateJoint(joint);
+            };
+
+            var bodyA = createBody();
+            var bodyB = createBody();
+
+            setTimeout(function(){
+               setJoint(bodyA, bodyB);
+            }, 1000);
+         };
       };
 
       (function(){
