@@ -16,6 +16,7 @@
       <button onclick="ChangeAccelerateCap()">ChangeAccelerateCap</button>
       <button onclick="MovingButton()">MovingButton</button>
       <button onclick="DistanceJointsButton()">DistanceJointsButton</button>
+      <button onclick="createEdgeBody()">createEdgeBody</button>
    </body>
    <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
    <script type="text/javascript">
@@ -290,6 +291,23 @@
             setTimeout(function(){
                setJoint(bodyA, bodyB);
             }, 1000);
+         };
+
+         window.createEdgeBody = function(){
+            // const eType = Math.random() < 0.5 ? true: false;
+            var createBody = function(a, b){
+               fixDef.shape = new Box2D.Collision.Shapes.b2PolygonShape;
+               fixDef.shape.SetAsEdge(a, b);
+               bodyDef.position.x = Math.random() * 355 + 25;
+               bodyDef.position.y = Math.random() * 50;
+
+               let obj = world.CreateBody(bodyDef).CreateFixture(fixDef);
+               obj.m_body.SetBullet(true);
+               return obj.m_body;
+            };
+
+            createBody({x: 10, y: 100}, {x: 50, y: 120});
+            createBody({x: 50, y: 120}, {x: 100, y: 120});
          };
       };
 
