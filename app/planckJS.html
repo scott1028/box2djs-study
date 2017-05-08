@@ -35,7 +35,7 @@
         // step01 create ground
         var groundFD = {
             density : 0.0,
-            friction : 0.1
+            friction : 3
         };
         var ground = world.createBody(planck.Vec2(0.0, 0.0));
         ground.createFixture(planck.Edge(planck.Vec2(-55.0, 0.0), planck.Vec2(50.0, 10.0)), groundFD);
@@ -46,10 +46,11 @@
         // create Ball
         var ball = world.createDynamicBody(planck.Vec2(0.0, 10.0));
         var ballFD = {
-            density: 7,
+            density: 1,
             friction: 0.1,
         };
         ball.createFixture(planck.Circle(2), ballFD);
+
 
         // sync testbed camera with ball(trigger when step invoke in testbed)
         testbed.step = function(){
@@ -78,14 +79,26 @@
         };
     };
 
+    planck.Vec2.prototype.asWorldCoordinate = function(width, height){
+        return {
+            x: this.x - width / 2,
+            y: height / 2 - this.y
+        }
+    };
+
     // testbed create canvas element automatically( in testbed need not call world.step(n) )
     planck.testbed(function(testbed) {
-        // testbed.width = 400;  // canvas viewport scale.
-        // testbed.height = 300;  // canvas viewport scale.
-        // debugger;
+        // testbed.width = 120;  // canvas viewport scale.
+        // testbed.height = 1;  // canvas viewport scale.
+        testbed.width = 80; // 80 is default and about 800 pixel when you are in fullscreen
+        testbed.height = 60;  // 60 is default and about 600 pixel when you are in fullscreen
+
+        testbed.mouseForce = -1500;
+        planck.internal.Settings.velocityThreshold = 0;
 
         var world = planck.World({
             gravity : planck.Vec2(0, -9.8)
+            // gravity : planck.Vec2(0, 0)
         });
 
         // rest of your code
@@ -93,6 +106,17 @@
 
         return world; // make sure you return the world
     });
+
+    {
+        document.body.onmousemove = function(e){
+            // var pos = planck.Vec2(e.clientX, e.clientY);
+            // console.log(pos.asWorldCoordinate(window.innerWidth, window.innerHeight));
+
+            document.body.onclick = function($e){
+                console.log($e, e);
+            };
+        };
+    };
 </script>
 </body>
 </html>
