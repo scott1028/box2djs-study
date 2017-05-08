@@ -33,7 +33,7 @@
             density : 0.0,
             friction : 0.6
         };
-        ground.createFixture(planck.Edge(planck.Vec2(-20.0, 0.0), planck.Vec2(20.0, 0.0)), groundFD);
+        ground.createFixture(planck.Edge(planck.Vec2(-50.0, 0.0), planck.Vec2(50.0, 10.0)), groundFD);
 
         // create Ball
         var ball = world.createDynamicBody(planck.Vec2(0.0, 7.0));
