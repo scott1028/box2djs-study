@@ -55,6 +55,18 @@
     };
 </script>
 <script>
+    // World Coordinate to Screen Coordinate.
+    planck.Vec2.prototype.asScreenCoordinate = function(width, height){
+        /*
+        planck.Vec2(1,-7).asScreenCoordinate(800, 600)
+        -> Object {x: 401, y: 307
+        */
+        return {
+            x: this.x + width / 2,
+            y: height / 2 - this.y
+        };
+    };
+
     // testbed create canvas element automatically( in testbed need not call world.step(n) )
     planck.testbed(function(testbed) {
         // testbed.width = 400;  // canvas viewport scale.
