@@ -28,20 +28,23 @@
 
     var main = function(world){
         // step01 create ground
-        var ground = world.createBody();
         var groundFD = {
             density : 0.0,
-            friction : 0.6
+            friction : 0.1
         };
-        ground.createFixture(planck.Edge(planck.Vec2(-50.0, 0.0), planck.Vec2(50.0, 10.0)), groundFD);
+        var ground = world.createBody(planck.Vec2(0.0, 0.0));
+        ground.createFixture(planck.Edge(planck.Vec2(-55.0, 0.0), planck.Vec2(50.0, 10.0)), groundFD);
+        // connect from lowerBound point
+        var ground = world.createBody(ground.getFixtureList().getAABB(0).lowerBound);
+        ground.createFixture(planck.Edge(planck.Vec2(-20.0, 5.0), planck.Vec2(0.0, 0.0)), groundFD);
 
         // create Ball
-        var ball = world.createDynamicBody(planck.Vec2(0.0, 7.0));
+        var ball = world.createDynamicBody(planck.Vec2(0.0, 10.0));
         var ballFD = {
-            density: 1,
-            friction: 0.2,
+            density: 7,
+            friction: 0.1,
         };
-        ball.createFixture(planck.Circle(0.4), ballFD);
+        ball.createFixture(planck.Circle(2), ballFD);
     };
 </script>
 <script>
