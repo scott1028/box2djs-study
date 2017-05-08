@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/planck-js/0.1.34/planck-with-testbed.js"></script>
+</head>
+<body>
+<script>
+    // implement render instead testbed here
+    var render = function(world){
+        // render & get next frame physics world info
+        var handler = null;
+        window.requestAnimationFrame(handler = function() {
+            // in each frame call world.step(timeStep) with fixed timeStep
+            world.step(1 / 60);
+
+            console.log(1);
+
+            // iterate over bodies and fixtures
+            // for (var body = world.getBodyList(); body; body = body.getNext()) {
+            //   for (var fixture = body.getFixtureList(); fixture; fixture = fixture.getNext()) {
+            //     // draw or update fixture
+            //   }
+            window.requestAnimationFrame(handler);
+            // }
+        });
+    };
+
+    var main = function(world){
+        // step01 create ground
+        var ground = world.createBody();
+        var groundFD = {
+            density : 0.0,
+            friction : 0.6
+        };
+        ground.createFixture(planck.Edge(planck.Vec2(-20.0, 0.0), planck.Vec2(20.0, 0.0)), groundFD);
+
+        // create Ball
+        var ball = world.createDynamicBody(planck.Vec2(0.0, 7.0));
+        var ballFD = {
+            density: 1,
+            friction: 0.2,
+        };
+        ball.createFixture(planck.Circle(0.4), ballFD);
+    };
+</script>
+<script>
+    // testbed create canvas element automatically( in testbed need not call world.step(n) )
+    planck.testbed(function(testbed) {
+        var world = planck.World({
+            gravity : planck.Vec2(0, -9.8)
+        });
+
+        // rest of your code
+        main(world);
+
+        return world; // make sure you return the world
+    });
+</script>
+</body>
+</html>
