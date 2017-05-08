@@ -58,6 +58,9 @@
             var angle = ball.getAngle();
             // document.querySelector('.box').style.transform = `rotate(-${angle}rad)`;
             document.querySelector('.box').style.transform = `rotate(${angle.screenAngle()}rad)`;
+            // document.querySelector('.box').style.left = ball.getPosition().asScreenCoordinate(80, 60).x * 10 + 'px';
+            // document.querySelector('.box').style.top = ball.getPosition().asScreenCoordinate(80, 60).y * 10 + 'px';
+            // console.debug('Ball Pos->', ball.getPosition(), 'Angle->', angle);
         };
     };
 </script>
@@ -88,10 +91,9 @@
 
     // testbed create canvas element automatically( in testbed need not call world.step(n) )
     planck.testbed(function(testbed) {
-        // testbed.width = 120;  // canvas viewport scale.
-        // testbed.height = 1;  // canvas viewport scale.
-        testbed.width = 80; // 80 is default and about 800 pixel when you are in fullscreen
-        testbed.height = 60;  // 60 is default and about 600 pixel when you are in fullscreen
+        // 如果預設就是 80*60 pixel 於 testbed 跑很快但是實際上 pixel 數卻移動很少.
+        testbed.width = 80; // default: 80 pixel viewport
+        testbed.height = 60;  // default: 60 pixel viewport
 
         testbed.mouseForce = -1500;
         planck.internal.Settings.velocityThreshold = 0;
