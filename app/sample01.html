@@ -4,7 +4,7 @@
     <title></title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/planck-js/0.1.34/planck-with-testbed.js"></script>
 </head>
-<body onblur="alert(1);">
+<body>
 <script>
     // implement render instead testbed here
     var render = function(world){
@@ -27,6 +27,8 @@
     };
 
     var main = function(world){
+        var testbed = this;
+
         // step01 create ground
         var groundFD = {
             density : 0.0,
@@ -45,6 +47,11 @@
             friction: 0.1,
         };
         ball.createFixture(planck.Circle(2), ballFD);
+
+        // sync testbed camera with ball(trigger when step invoke in testbed)
+        testbed.step = function(){
+            testbed.x = ball.getPosition().x;
+        };
     };
 </script>
 <script>
@@ -55,7 +62,7 @@
         });
 
         // rest of your code
-        main(world);
+        main.call(testbed, world);
 
         return world; // make sure you return the world
     });
