@@ -57,6 +57,10 @@
 <script>
     // testbed create canvas element automatically( in testbed need not call world.step(n) )
     planck.testbed(function(testbed) {
+        // testbed.width = 400;  // canvas viewport scale.
+        // testbed.height = 300;  // canvas viewport scale.
+        // debugger;
+
         var world = planck.World({
             gravity : planck.Vec2(0, -9.8)
         });
