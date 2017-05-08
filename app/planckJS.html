@@ -61,13 +61,14 @@
                 document.querySelector('.box').style.transform = `rotate(${angle.screenAngle()}rad)`;
                 // 
                 let worldToScreenScale = window.innerHeight / 60;
-                let pos = ball.getPosition();
-                let $pos = pos.asScreenCoordinate(80 * worldToScreenScale, 60 * worldToScreenScale);
-
-
-                document.querySelector('.box').style.left = $pos.x + 'px';
-                document.querySelector('.box').style.top = $pos.y + 'px';
-                // console.debug('Ball Pos->', ball.getPosition(), 'Angle->', angle);
+                let pos = planck.Vec2(ball.getPosition().x, ball.getPosition().y);
+                pos.x *= worldToScreenScale;
+                pos.y *= worldToScreenScale;
+                let $pos = pos.asScreenCoordinate(window.innerWidth, window.innerHeight);
+                document.querySelector('.box').style.width = worldToScreenScale * r * 2 + 'px';
+                document.querySelector('.box').style.height = worldToScreenScale * r * 2 + 'px';
+                document.querySelector('.box').style.left = worldToScreenScale * -r + $pos.x + 'px';
+                document.querySelector('.box').style.top = worldToScreenScale * -r + $pos.y + 'px';
             };
         };
     };
