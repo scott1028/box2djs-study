@@ -59,8 +59,14 @@
                 var angle = ball.getAngle();
                 // document.querySelector('.box').style.transform = `rotate(-${angle}rad)`;
                 document.querySelector('.box').style.transform = `rotate(${angle.screenAngle()}rad)`;
-                // document.querySelector('.box').style.left = ball.getPosition().asScreenCoordinate(80, 60).x * 10 + 'px';
-                // document.querySelector('.box').style.top = ball.getPosition().asScreenCoordinate(80, 60).y * 10 + 'px';
+                // 
+                let worldToScreenScale = window.innerHeight / 60;
+                let pos = ball.getPosition();
+                let $pos = pos.asScreenCoordinate(80 * worldToScreenScale, 60 * worldToScreenScale);
+
+
+                document.querySelector('.box').style.left = $pos.x + 'px';
+                document.querySelector('.box').style.top = $pos.y + 'px';
                 // console.debug('Ball Pos->', ball.getPosition(), 'Angle->', angle);
             };
         };
@@ -72,7 +78,7 @@
         return this * -1;
     };
 
-    // World Coordinate to Screen Coordinate.
+    // World Coordinate to Screen Coordinate, parameter is world viewport width="80 * scale", height="60 * scale"
     planck.Vec2.prototype.asScreenCoordinate = function(width, height){
         /*
         planck.Vec2(1,-7).asScreenCoordinate(800, 600)
@@ -84,6 +90,7 @@
         };
     };
 
+    // parameter is screen viewport width="1920 / scale" , height="1080 / scale"
     planck.Vec2.prototype.asWorldCoordinate = function(width, height){
         return {
             x: this.x - width / 2,
