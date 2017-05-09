@@ -79,7 +79,7 @@
         return this * -1;
     };
 
-    // World Coordinate to Screen Coordinate, parameter is world viewport width="80 * scale", height="60 * scale"
+    // World Coordinate to Screen Coordinate, parameter is viewport, ex: width=1920, height=1080
     planck.Vec2.prototype.asScreenCoordinate = function(width, height){
         /*
         planck.Vec2(1,-7).asScreenCoordinate(800, 600)
@@ -91,7 +91,7 @@
         };
     };
 
-    // parameter is screen viewport width="1920 / scale" , height="1080 / scale"
+    // parameter is screen viewport, ex: width=1920 , height=1080
     planck.Vec2.prototype.asWorldCoordinate = function(width, height){
         return {
             x: this.x - width / 2,
