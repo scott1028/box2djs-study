@@ -52,23 +52,25 @@
                 friction: 0.1,
             };
             ball.createFixture(planck.Circle(r), ballFD);
+            var node = document.querySelector('.box'); //.cloneNode(false);
+            document.body.appendChild(node);
 
             // sync testbed camera with ball(trigger when step invoke in testbed)
             testbed.step = function(){
                 // testbed.x = ball.getPosition().x;
                 var angle = ball.getAngle();
                 // document.querySelector('.box').style.transform = `rotate(-${angle}rad)`;
-                document.querySelector('.box').style.transform = `rotate(${angle.screenAngle()}rad)`;
+                node.style.transform = `rotate(${angle.screenAngle()}rad)`;
                 // 
                 let worldToScreenScale = window.innerHeight / 60;
                 let pos = planck.Vec2(ball.getPosition().x, ball.getPosition().y);
                 pos.x *= worldToScreenScale;
                 pos.y *= worldToScreenScale;
                 let $pos = pos.asScreenCoordinate(window.innerWidth, window.innerHeight);
-                document.querySelector('.box').style.width = worldToScreenScale * r * 2 + 'px';
-                document.querySelector('.box').style.height = worldToScreenScale * r * 2 + 'px';
-                document.querySelector('.box').style.left = worldToScreenScale * -r + $pos.x + 'px';
-                document.querySelector('.box').style.top = worldToScreenScale * -r + $pos.y + 'px';
+                node.style.width = worldToScreenScale * r * 2 + 'px';
+                node.style.height = worldToScreenScale * r * 2 + 'px';
+                node.style.left = worldToScreenScale * -r + $pos.x + 'px';
+                node.style.top = worldToScreenScale * -r + $pos.y + 'px';
             };
         };
     };
