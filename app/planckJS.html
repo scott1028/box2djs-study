@@ -66,7 +66,7 @@
                 let pos = planck.Vec2(ball.getPosition().x, ball.getPosition().y);
                 pos.x *= worldToScreenScale;
                 pos.y *= worldToScreenScale;
-                let $pos = pos.asScreenCoordinate(window.innerWidth, window.innerHeight);
+                let $pos = pos.asScreenCoordinate();
                 node.style.width = worldToScreenScale * r * 2 + 'px';
                 node.style.height = worldToScreenScale * r * 2 + 'px';
                 node.style.left = worldToScreenScale * -r + $pos.x + 'px';
@@ -83,6 +83,8 @@
 
     // World Coordinate to Screen Coordinate, parameter is viewport, ex: width=1920, height=1080
     planck.Vec2.prototype.asScreenCoordinate = function(width, height){
+        if(width === undefined) width = window.innerWidth;
+        if(height === undefined) height = window.innerHeight;
         /*
         planck.Vec2(1,-7).asScreenCoordinate(800, 600)
         -> Object {x: 401, y: 307
@@ -95,6 +97,8 @@
 
     // parameter is screen viewport, ex: width=1920 , height=1080
     planck.Vec2.prototype.asWorldCoordinate = function(width, height){
+        if(width === undefined) width = window.innerWidth;
+        if(height === undefined) height = window.innerHeight;
         return {
             x: this.x - width / 2,
             y: height / 2 - this.y
@@ -150,7 +154,7 @@
         document.body.onmousemove = function(e){
             document.body.onclick = function($e){
                 var pos = planck.Vec2($e.clientX, $e.clientY);
-                var $pos = pos.asWorldCoordinate(window.innerWidth, window.innerHeight);
+                var $pos = pos.asWorldCoordinate();
                 var $$pos = posScreenToWorld($pos.x, $pos.y, worldToScreenScale);
                 createBall(1, $$pos.x, $$pos.y);
             };
