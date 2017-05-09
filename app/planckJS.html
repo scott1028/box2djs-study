@@ -97,14 +97,11 @@
             // normalize ref: https://msdn.microsoft.com/zh-tw/library/system.windows.vector.normalize(v=vs.110).aspx
             // var v = planck.Vec2(x, y);
             var origin = planck.Vec2(0, 0);
+            var target = null;
             world.rayCast(origin, planck.Vec2(x, y), function(fixture, point, normal, fraction){
                 // 為反射角 Raycast, add wAdd with normal
                 // var head = planck.Vec2.wAdd(1, point, 0.5, normal);
-
-                // testbed.drawSegment(point, head, testbed.color(0.9, 0.9, 0.4));
-                testbed.drawSegment(origin, point, testbed.color(100, 50, 0.8));
-                testbed.drawPoint(point, 10.0, testbed.color(0.4, 0.9, 0.4));
-
+                target = point;
                 // By returning 0, we instruct the calling code to terminate the ray-cast.
                 // By returning 1, we instruct the caller to continue without clipping the ray.
                 // By returning -1, we instruct the calling code to ignore this fixture and continue the ray-cast to the next fixture.
@@ -117,6 +114,11 @@
                 // return 0;
                 // return -1;
             });
+            // To draw at outside of raycast-callback
+            if(target){
+                testbed.drawSegment(origin, target, testbed.color(100, 50, 0.8));
+                testbed.drawPoint(target, 10.0, testbed.color(0.4, 0.9, 0.4));
+            };
         };
     };
 </script>
@@ -164,8 +166,8 @@
         // planck.internal.Settings.velocityThreshold = 0;
 
         var world = planck.World({
-            // gravity : planck.Vec2(0, -9.8)
-            gravity : planck.Vec2(0, 0)
+            gravity : planck.Vec2(0, -9.8)
+            // gravity : planck.Vec2(0, 0)
         });
 
         // rest of your code
