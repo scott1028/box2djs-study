@@ -126,40 +126,40 @@
         // rest of your code
         main.call(testbed, world);
 
+        // 計算 80 60 Pixel 與 Screen Coordinate 比例與轉換
+        {
+            let worldToScreenScale = window.innerHeight / 60;
+
+            var posScreenToWorld = function(x, y, scale){
+                return {
+                    x: x / scale, 
+                    y: y / scale
+                }
+            };
+
+            var posWorldToScreen = function(x, y, scale){
+                return {
+                    x: x * scale,
+                    y: y * scale
+                }
+            };
+            
+            document.body.onresize = function(){
+                worldToScreenScale = window.innerHeight / 60;
+            };
+
+            document.body.onmousemove = function(e){
+                document.body.onclick = function($e){
+                    var pos = planck.Vec2($e.clientX, $e.clientY);
+                    var $pos = pos.asWorldCoordinate();
+                    var $$pos = posScreenToWorld($pos.x, $pos.y, worldToScreenScale);
+                    createBall(1, $$pos.x, $$pos.y);
+                };
+            };
+        };
         return world; // make sure you return the world
     });
 
-    // 計算 80 60 Pixel 與 Screen Coordinate 比例與轉換
-    {
-        let worldToScreenScale = window.innerHeight / 60;
-
-        var posScreenToWorld = function(x, y, scale){
-            return {
-                x: x / scale, 
-                y: y / scale
-            }
-        };
-
-        var posWorldToScreen = function(x, y, scale){
-            return {
-                x: x * scale,
-                y: y * scale
-            }
-        };
-        
-        document.body.onresize = function(){
-            worldToScreenScale = window.innerHeight / 60;
-        };
-
-        document.body.onmousemove = function(e){
-            document.body.onclick = function($e){
-                var pos = planck.Vec2($e.clientX, $e.clientY);
-                var $pos = pos.asWorldCoordinate();
-                var $$pos = posScreenToWorld($pos.x, $pos.y, worldToScreenScale);
-                createBall(1, $$pos.x, $$pos.y);
-            };
-        };
-    };
 </script>
 </body>
 </html>
