@@ -44,6 +44,13 @@
         ground.createFixture(planck.Edge(planck.Vec2(-20.0, 5.0), planck.Vec2(0.0, 0.0)), groundFD);
 
         // create Ball
+        var ballDef = {
+            ball: null,
+            x: null,
+            y: null,
+            r: null,
+            node: null,
+        };
         window.createBall = function(r, x, y){
             var ball = world.createDynamicBody(planck.Vec2(x, y));
             // var ball = world.createDynamicBody(planck.Vec2(0.0, 10.0));
@@ -54,33 +61,62 @@
             ball.createFixture(planck.Circle(r), ballFD);
             var node = document.querySelector('.box'); //.cloneNode(false);
             document.body.appendChild(node);
+            ballDef.ball = ball;
+            ballDef.x = x;
+            ballDef.y = y;
+            ballDef.r = r;
+            ballDef.node = node;
+        };
 
-            // sync testbed camera with ball(trigger when step invoke in testbed)
-            testbed.step = function(){
-                // testbed.x = ball.getPosition().x;
-                var angle = ball.getAngle();
-                // document.querySelector('.box').style.transform = `rotate(-${angle}rad)`;
-                node.style.transform = `rotate(${angle.screenAngle()}rad)`;
-                // 
-                let worldToScreenScale = window.innerHeight / 60;
-                let pos = planck.Vec2(ball.getPosition().x, ball.getPosition().y);
-                pos.x *= worldToScreenScale;
-                pos.y *= worldToScreenScale;
-                let $pos = pos.asScreenCoordinate();
-                node.style.width = worldToScreenScale * r * 2 + 'px';
-                node.style.height = worldToScreenScale * r * 2 + 'px';
-                node.style.left = worldToScreenScale * -r + $pos.x + 'px';
-                node.style.top = worldToScreenScale * -r + $pos.y + 'px';
+        // sync testbed camera with ball(trigger when step invoke in testbed)
+        testbed.step = function(){
+            if(ballDef.ball === null)
+                return;
+            var ball = ballDef.ball;
+            var x = ballDef.x;
+            var y = ballDef.y;
+            var r = ballDef.r;
+            var node = ballDef.node;
 
-                // test raycast by AB point, ref: https://github.com/shakiba/planck.js/blob/master/example/RayCast.js
-                world.rayCast(planck.Vec2(0, 0), planck.Vec2(5, 30), function(fixture, point, normal, fraction){
-                    // By returning 0, we instruct the calling code to terminate the ray-cast.
-                    // By returning 1, we instruct the caller to continue without clipping the ray.
-                    testbed.drawSegment(planck.Vec2(0, 0), point, testbed.color(100, 50, 0.8));
-                    return 0;
-                    // return 0;
-                });
-            };
+            // testbed.x = ball.getPosition().x;
+            var angle = ball.getAngle();
+            // document.querySelector('.box').style.transform = `rotate(-${angle}rad)`;
+            node.style.transform = `rotate(${angle.screenAngle()}rad)`;
+            // 
+            let worldToScreenScale = window.innerHeight / 60;
+            let pos = planck.Vec2(ball.getPosition().x, ball.getPosition().y);
+            pos.x *= worldToScreenScale;
+            pos.y *= worldToScreenScale;
+            let $pos = pos.asScreenCoordinate();
+            node.style.width = worldToScreenScale * r * 2 + 'px';
+            node.style.height = worldToScreenScale * r * 2 + 'px';
+            node.style.left = worldToScreenScale * -r + $pos.x + 'px';
+            node.style.top = worldToScreenScale * -r + $pos.y + 'px';
+
+            // test raycast by AB point, ref: https://github.com/shakiba/planck.js/blob/master/example/RayCast.js
+            // normalize ref: https://msdn.microsoft.com/zh-tw/library/system.windows.vector.normalize(v=vs.110).aspx
+            // var v = planck.Vec2(x, y);
+            var origin = planck.Vec2(0, 0);
+            world.rayCast(origin, planck.Vec2(x, y), function(fixture, point, normal, fraction){
+                // 為反射角 Raycast, add wAdd with normal
+                // var head = planck.Vec2.wAdd(1, point, 0.5, normal);
+
+                // testbed.drawSegment(point, head, testbed.color(0.9, 0.9, 0.4));
+                testbed.drawSegment(origin, point, testbed.color(100, 50, 0.8));
+                testbed.drawPoint(point, 10.0, testbed.color(0.4, 0.9, 0.4));
+
+                // By returning 0, we instruct the calling code to terminate the ray-cast.
+                // By returning 1, we instruct the caller to continue without clipping the ray.
+                // By returning -1, we instruct the calling code to ignore this fixture and continue the ray-cast to the next fixture.
+                // By returning the current fraction, we instruct the calling code to clip the ray and
+                // continue the ray-cast to the next fixture. WARNING: do not assume that fixtures
+                // are reported in order. However, "by clipping, we can always get the closest fixture".
+                return fraction;
+                // return 0;
+                // return 1;
+                // return 0;
+                // return -1;
+            });
         };
     };
 </script>
@@ -125,11 +161,11 @@
         testbed.height = 60;  // default: 60 pixel viewport
 
         testbed.mouseForce = -1500;
-        planck.internal.Settings.velocityThreshold = 0;
+        // planck.internal.Settings.velocityThreshold = 0;
 
         var world = planck.World({
-            gravity : planck.Vec2(0, -9.8)
-            // gravity : planck.Vec2(0, 0)
+            // gravity : planck.Vec2(0, -9.8)
+            gravity : planck.Vec2(0, 0)
         });
 
         // rest of your code
