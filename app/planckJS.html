@@ -71,6 +71,15 @@
                 node.style.height = worldToScreenScale * r * 2 + 'px';
                 node.style.left = worldToScreenScale * -r + $pos.x + 'px';
                 node.style.top = worldToScreenScale * -r + $pos.y + 'px';
+
+                // test raycast by AB point, ref: https://github.com/shakiba/planck.js/blob/master/example/RayCast.js
+                world.rayCast(planck.Vec2(0, 0), planck.Vec2(5, 30), function(fixture, point, normal, fraction){
+                    // By returning 0, we instruct the calling code to terminate the ray-cast.
+                    // By returning 1, we instruct the caller to continue without clipping the ray.
+                    testbed.drawSegment(planck.Vec2(0, 0), point, testbed.color(100, 50, 0.8));
+                    return 0;
+                    // return 0;
+                });
             };
         };
     };
