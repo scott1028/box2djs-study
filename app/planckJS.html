@@ -108,7 +108,7 @@
                 // By returning the current fraction, we instruct the calling code to clip the ray and
                 // continue the ray-cast to the next fixture. WARNING: do not assume that fixtures
                 // are reported in order. However, "by clipping, we can always get the closest fixture".
-                return fraction;
+                return fraction;  // stop callback when closest fixture
                 // return 0;
                 // return 1;
                 // return -1;
