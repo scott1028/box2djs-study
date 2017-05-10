@@ -55,7 +55,7 @@
             var ball = world.createDynamicBody(planck.Vec2(x, y));
             // var ball = world.createDynamicBody(planck.Vec2(0.0, 10.0));
             var ballFD = {
-                density: 1,
+                density: 0.1,
                 friction: 0.1,
             };
             ball.createFixture(planck.Circle(r), ballFD);
@@ -66,6 +66,7 @@
             ballDef.y = y;
             ballDef.r = r;
             ballDef.node = node;
+            return ball;
         };
 
         // sync testbed camera with ball(trigger when step invoke in testbed)
@@ -161,7 +162,7 @@
         testbed.width = 80; // default: 80 pixel viewport
         testbed.height = 60;  // default: 60 pixel viewport
 
-        testbed.mouseForce = -1500;
+        // testbed.mouseForce = -1500;
         // planck.internal.Settings.velocityThreshold = 0;
 
         var world = planck.World({
@@ -196,10 +197,30 @@
 
             document.body.onmousemove = function(e){
                 document.body.onclick = function($e){
+                    if(window.mouseJoint){
+                        world.destroyJoint(window.mouseJoint);
+                    }
+
                     var pos = planck.Vec2($e.clientX, $e.clientY);
                     var $pos = pos.asWorldCoordinate();
                     var $$pos = posScreenToWorld($pos.x, $pos.y, worldToScreenScale);
-                    createBall(1, $$pos.x, $$pos.y);
+                    var ball = createBall(1, $$pos.x, $$pos.y);
+
+                    // test mouseJoint
+                    var mouseGround = world.createBody();
+                    var anchor = planck.Vec2($$pos.x, $$pos.y);
+                    mouseJoint = planck.MouseJoint({
+                        maxForce: 1e3,  // when mouse target changed.
+                        // dampingRatio: 7
+                    }, mouseGround, ball, anchor);
+                    world.createJoint(mouseJoint);
+                };
+
+                if(window.mouseJoint){
+                    var pos = planck.Vec2(e.clientX, e.clientY);
+                    var $pos = pos.asWorldCoordinate();
+                    var $$pos = posScreenToWorld($pos.x, $pos.y, worldToScreenScale);
+                    mouseJoint.setTarget(planck.Vec2($$pos.x, $$pos.y));
                 };
             };
         };
