@@ -220,7 +220,7 @@
                     var pos = planck.Vec2(e.clientX, e.clientY);
                     var $pos = pos.asWorldCoordinate();
                     var $$pos = posScreenToWorld($pos.x, $pos.y, worldToScreenScale);
-                    mouseJoint.setTarget(planck.Vec2($$pos.x, $$pos.y));
+                    mouseJoint.setTarget(planck.Vec2($$pos.x, $$pos.y));  // setTarget 產生加速度(力), 否則會像 RotateJoint
                 };
             };
         };
