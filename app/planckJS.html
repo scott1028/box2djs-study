@@ -99,7 +99,7 @@
             // var v = planck.Vec2(x, y);
             var origin = planck.Vec2(0, 0);
             var target = null;
-            world.rayCast(origin, planck.Vec2(x, y), function(fixture, point, normal, fraction){
+            world.rayCast(origin, ball.getPosition(), function(fixture, point, normal, fraction){
                 // 為反射角 Raycast, add wAdd with normal
                 // var head = planck.Vec2.wAdd(1, point, 0.5, normal);
                 target = point;
